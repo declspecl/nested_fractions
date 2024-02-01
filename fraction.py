@@ -11,6 +11,9 @@ class Fraction:
 
         self.numerator = numerator
         self.denominator = denominator
+        self.depth = 0
+
+        self._increment_depth_of_self_and_children()
 
     def simplify(self) -> Fraction:
         """
@@ -21,16 +24,25 @@ class Fraction:
 
         pass
 
+    def _increment_depth_of_self_and_children(self):
+        if type(self.numerator) == Fraction:
+            self.numerator.depth += 1
+            self.numerator.increment_depth_of_self_and_children()
+
+        if type(self.denominator) == Fraction:
+            self.denominator.depth += 1
+            self.denominator.increment_depth_of_self_and_children()
+
     def __repr__(self) -> str:
         """
         just a utility function to make printing `Fraction`s prettier
         """
 
-        return "({} / {})".format(self.numerator, self.denominator)
+        return "({} / {}), [{}])".format(self.numerator, self.denominator, self.depth)
 
     def __str__(self) -> str:
         """
         just a utility function to make printing `Fraction`s prettier
         """
 
-        return "({} / {})".format(self.numerator, self.denominator)
+        return "({} / {}, [{}])".format(self.numerator, self.denominator, self.depth)
