@@ -27,11 +27,11 @@ class Fraction:
     def _increment_depth_of_self_and_children(self):
         if type(self.numerator) == Fraction:
             self.numerator.depth += 1
-            self.numerator.increment_depth_of_self_and_children()
+            self.numerator._increment_depth_of_self_and_children()
 
         if type(self.denominator) == Fraction:
             self.denominator.depth += 1
-            self.denominator.increment_depth_of_self_and_children()
+            self.denominator._increment_depth_of_self_and_children()
 
     def __repr__(self) -> str:
         """
