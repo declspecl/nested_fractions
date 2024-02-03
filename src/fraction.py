@@ -22,7 +22,38 @@ class Fraction:
         should reduce the resulting `Fraction` into simplest form. i.e. `2/4` should simplify into `1/2`
         """
 
+        # using the node traversal list order from `self.breadth_first_traversal()`, acting as a heap to recursively simplify the fraction
+        # from the bottom up
+
+        nodes: list[Fraction] = self.breadth_first_traversal()
+
+        # good idea:
+        # recursive?
+        # numerator = numerator.simplify()
+        # denominator = denominator.simplify()
+
         pass
+
+    def breadth_first_traversal(self) -> list[Fraction]:
+        """
+        returns a list of `Fraction` objects in the order of a breadth-first traversal of the `Fraction` tree
+        """
+
+        queue: list[Fraction] = [self]
+        visited_nodes: list[Fraction] = []
+
+        # while not empty
+        while len(queue) > 0:
+            # dequeue the first node (oldest added) ([fifo])
+            node: Fraction = queue.pop(0)
+            visited_nodes.append(node)
+            
+            if type(node.numerator) == Fraction:
+                queue.append(node.numerator)
+            if type(node.denominator) == Fraction:
+                queue.append(node.denominator)
+
+        return visited_nodes
 
     def _increment_depth_of_self_and_children(self):
         if type(self.numerator) == Fraction:
@@ -38,11 +69,21 @@ class Fraction:
         just a utility function to make printing `Fraction`s prettier
         """
 
-        return "({} / {}), [{}])".format(self.numerator, self.denominator, self.depth)
+        num = "frac" if type(self.numerator) == Fraction else self.numerator
+        den = "frac" if type(self.denominator) == Fraction else self.denominator
+
+        return "({} / {}), [{}])".format(num, den, self.depth)
+        
+        # return "({} / {}), [{}])".format(self.numerator, self.denominator, self.depth)
 
     def __str__(self) -> str:
         """
         just a utility function to make printing `Fraction`s prettier
         """
 
-        return "({} / {}, [{}])".format(self.numerator, self.denominator, self.depth)
+        num = "frac" if type(self.numerator) == Fraction else self.numerator
+        den = "frac" if type(self.denominator) == Fraction else self.denominator
+
+        return "({} / {}), [{}])".format(num, den, self.depth)
+
+        # return "({} / {}), [{}])".format(self.numerator, self.denominator, self.depth)
