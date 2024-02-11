@@ -5,7 +5,7 @@ import math
 class Fraction:
     """class used to represent a fraction"""
 
-    def __init__(self, numerator: int | float | Fraction, denominator: int | float | Fraction = 1, tree_height: int | None = None):
+    def __init__(self, numerator: int | float | Fraction, denominator: int | float | Fraction = 1):
         """
         takes two arguments: `numerator` and `denominator`
         both can be either a number (`int` or `float`) or another `Fraction` to represent nested fractions
@@ -14,22 +14,16 @@ class Fraction:
         self.numerator = numerator
         self.denominator = denominator
 
-        # only if manually overridden
-        if not tree_height is None:
-            self.tree_height = tree_height
+        numerator_tree_height: int = self.numerator.tree_height if type(self.numerator) == Fraction else -1
+        denominator_tree_height: int = self.denominator.tree_height if type(self.denominator) == Fraction else -1
 
-        # if left empty (natural Fraction generation)
-        else:
-            numerator_tree_height: int = self.numerator.tree_height if type(self.numerator) == Fraction else -1
-            denominator_tree_height: int = self.denominator.tree_height if type(self.denominator) == Fraction else -1
+        highest_tree_height_of_numerator_or_denominator: int = max(numerator_tree_height, denominator_tree_height)
 
-            highest_tree_height_of_numerator_or_denominator: int = max(numerator_tree_height, denominator_tree_height)
+        # will be 0 if numerator and denominator are both constants
+        # will be 1 or higher BY DEFINITION if either the numerator or denominator is a fraction
+        self.tree_height: int = highest_tree_height_of_numerator_or_denominator + 1
 
-            # will be 0 if numerator and denominator are both constants
-            # will be 1 or higher BY DEFINITION if either the numerator or denominator is a fraction
-            self.tree_height: int = highest_tree_height_of_numerator_or_denominator + 1
-
-            # results in root node having the highest tree height, and double constants fractions having 0 tree height
+        # results in root node having the highest tree height, and double constants fractions having 0 tree height
 
     def simplify(self) -> Fraction:
         """
@@ -40,7 +34,7 @@ class Fraction:
 
         self.expand()
 
-        fraction_traversal: list[Fraction] = self.breadth_first_traversal()
+        fraction_traversal: list[Fraction] = self.level_order_traversal()
 
         new_fraction: Fraction = Fraction(1, 1)
 
@@ -64,6 +58,8 @@ class Fraction:
             i += 2
             should_flip_operation = not should_flip_operation
 
+        print(new_fraction)
+
         gcd = math.gcd(new_fraction.numerator, new_fraction.denominator)
 
         new_fraction.numerator //= gcd
@@ -71,9 +67,9 @@ class Fraction:
 
         return new_fraction
 
-    def breadth_first_traversal(self) -> list[Fraction]:
+    def level_order_traversal(self) -> list[Fraction]:
         """
-        returns a list of `Fraction` objects in the order of a breadth-first traversal of the `Fraction` tree
+        returns a list of `Fraction` objects in a level-order traversal (same as BFS) of the `Fraction` tree
         """
 
         queue: list[Fraction] = [self]
@@ -94,7 +90,7 @@ class Fraction:
     
     def expand(self):
         """
-        expands all `Fraction`s recursively to create a symmetrical, perfect binary tree with `n=root.depth` layers
+        expands all `Fraction`s recursively to create a symmetrical, perfect binary tree with `n=root.tree_height+1` layers of `Fraction`s
         """
 
         # am i on the bottom of the tree? (am i a double constant fraction)
@@ -103,14 +99,16 @@ class Fraction:
         
         # i am not on the bottom of the tree
         if type(self.numerator) != Fraction:
-            self.numerator = Fraction(self.numerator, 1, self.tree_height - 1)
+            self.numerator = Fraction(self.numerator, 1)
 
+        self.numerator.tree_height = self.tree_height - 1
         self.numerator.expand()
 
         # i am not on the bottom of the tree
         if type(self.denominator) != Fraction:
-            self.denominator = Fraction(self.denominator, 1, self.tree_height - 1)
+            self.denominator = Fraction(self.denominator, 1)
 
+        self.denominator.tree_height = self.tree_height - 1
         self.denominator.expand()
 
     def __repr__(self) -> str:
@@ -118,14 +116,14 @@ class Fraction:
         just a utility function to make printing `Fraction`s prettier
         """
 
-        return "({} / {})".format(self.numerator, self.denominator)
+        return "({} / {}) @ {}".format(self.numerator, self.denominator, self.tree_height)
 
     def __str__(self) -> str:
         """
         just a utility function to make printing `Fraction`s prettier
         """
 
-        return "({} / {})".format(self.numerator, self.denominator)
+        return "({} / {}) @ {}".format(self.numerator, self.denominator, self.tree_height)
     
     def __eq__(self, other: Fraction) -> bool:
         """
