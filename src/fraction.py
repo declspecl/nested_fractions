@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import math
+
 class Fraction:
     """class used to represent a fraction"""
 
@@ -12,8 +14,11 @@ class Fraction:
         self.numerator = numerator
         self.denominator = denominator
 
+        # only if manually overridden
         if not tree_height is None:
             self.tree_height = tree_height
+
+        # if left empty (natural Fraction generation)
         else:
             numerator_tree_height: int = self.numerator.tree_height if type(self.numerator) == Fraction else -1
             denominator_tree_height: int = self.denominator.tree_height if type(self.denominator) == Fraction else -1
@@ -33,11 +38,38 @@ class Fraction:
         should reduce the resulting `Fraction` into simplest form. i.e. `2/4` should simplify into `1/2`
         """
 
-        self._expand()
+        self.expand()
 
         fraction_traversal: list[Fraction] = self.breadth_first_traversal()
 
-        pass
+        new_fraction: Fraction = Fraction(1, 1)
+
+        # there are (2 ** (self.tree_height + 1)) - 1 nodes in the tree
+        # the last layer fractions are the final 2 ** self.tree_height nodes
+
+        i: int = len(fraction_traversal) - (2 ** self.tree_height)
+        should_flip_operation: bool = False
+
+        while i + 1 < len(fraction_traversal):
+            left = fraction_traversal[i]
+            right = fraction_traversal[i + 1]
+            
+            if not should_flip_operation:
+                new_fraction.numerator *= (left.numerator * right.denominator)
+                new_fraction.denominator *= (left.denominator * right.numerator)
+            else:
+                new_fraction.numerator *= (left.denominator * right.numerator)
+                new_fraction.denominator *= (left.numerator * right.denominator)
+
+            i += 2
+            should_flip_operation = not should_flip_operation
+
+        gcd = math.gcd(new_fraction.numerator, new_fraction.denominator)
+
+        new_fraction.numerator //= gcd
+        new_fraction.denominator //= gcd
+
+        return new_fraction
 
     def breadth_first_traversal(self) -> list[Fraction]:
         """
@@ -60,27 +92,26 @@ class Fraction:
 
         return visited_nodes
     
-    def _expand(self):
+    def expand(self):
         """
         expands all `Fraction`s recursively to create a symmetrical, perfect binary tree with `n=root.depth` layers
         """
 
-        # am i on the bottom of the tree? (guaranteed to be a double constant fraction)
+        # am i on the bottom of the tree? (am i a double constant fraction)
         if self.tree_height == 0:
-            # print("skipping {}".format(self))
-
             return
         
         # i am not on the bottom of the tree
         if type(self.numerator) != Fraction:
             self.numerator = Fraction(self.numerator, 1, self.tree_height - 1)
 
-        self.numerator._expand()
+        self.numerator.expand()
 
+        # i am not on the bottom of the tree
         if type(self.denominator) != Fraction:
             self.denominator = Fraction(self.denominator, 1, self.tree_height - 1)
 
-        self.denominator._expand()
+        self.denominator.expand()
 
     def __repr__(self) -> str:
         """

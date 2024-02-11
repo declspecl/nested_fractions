@@ -12,7 +12,8 @@ class FractionTest(unittest.TestCase):
 
         correct_simplification = Fraction(3, 31)
 
-        self.assertEqual(above_over_five.simplify(), correct_simplification)
+        self.assertEqual(above_over_five.simplify().numerator, correct_simplification.numerator)
+        self.assertEqual(above_over_five.simplify().denominator, correct_simplification.denominator)
 
     def test_medium(self):
         """
@@ -26,19 +27,14 @@ class FractionTest(unittest.TestCase):
 
         frac_of_above_over_three = Fraction(frac_of_above, 3)
 
-        correct_simplification = Fraction(3, 9)
+        correct_simplification = Fraction(3, 8)
 
-        self.assertEqual(frac_of_above_over_three.simplify(), correct_simplification)
+        self.assertEqual(frac_of_above_over_three.simplify().numerator, correct_simplification.numerator)
+        self.assertEqual(frac_of_above_over_three.simplify().denominator, correct_simplification.denominator)
 
 if __name__ == "__main__":
-    f_12: Fraction = Fraction(1, 2)
-    f_13: Fraction = Fraction(1, 3)
-    f_f_12_4: Fraction = Fraction(f_12, 4)
-    f_5_f_f12_f13_5: Fraction = Fraction(5, f_f_12_4)
-
-    f_5_f_f12_f13_5.simplify()
-    print(f_5_f_f12_f13_5.breadth_first_traversal())
-    # unittest.main()
+    unittest.main()
 
 # nested fraction manifesto
-# if we normalize everything, the deepest layer will be ONLY constants and thus can be trivially simplifi
+# if we expand everything to the deepest point, the deepest layer will be ONLY constants and thus can be trivially simplified (DCFs)
+# performing a breadth-first traversal will place all of the DCFs at the end of the list, which can then be evaluated independently in pairs
