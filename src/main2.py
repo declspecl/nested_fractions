@@ -1,5 +1,5 @@
 import unittest
-from fraction import Fraction
+from fraction2 import Fraction
 
 class FractionTest(unittest.TestCase):
     def test_easy(self):
@@ -31,13 +31,23 @@ class FractionTest(unittest.TestCase):
         self.assertEqual(frac_of_above_over_three.simplify(), correct_simplification)
 
 if __name__ == "__main__":
-    f_12: Fraction = Fraction(1, 2)
-    f_13: Fraction = Fraction(1, 3)
-    f_f_12_4: Fraction = Fraction(f_12, 4)
-    f_5_f_f12_f13_5: Fraction = Fraction(5, f_f_12_4)
+    fraction1: Fraction = Fraction(1, 2) # 0
+    fraction2: Fraction = Fraction(1, 3) # 0
+    fraction3: Fraction = Fraction(fraction1, fraction2) # 1
+    fraction4: Fraction = Fraction(3, fraction3) # 2
 
-    f_5_f_f12_f13_5.simplify()
-    print(f_5_f_f12_f13_5.breadth_first_traversal())
+    fraction12: Fraction = Fraction(1, 3) # 0
+    fraction13: Fraction = Fraction(fraction12, fraction2) # 1
+    fraction14: Fraction = Fraction(fraction13, fraction3) # 2
+
+
+    fraction5 = Fraction(fraction4, 5) # 0
+    fraction6 = Fraction(5, fraction5) # 1
+
+    fraction7 = Fraction(fraction14, fraction6) # 3
+
+    fraction7._depthify()
+    print(fraction7)
     # unittest.main()
 
 # nested fraction manifesto
