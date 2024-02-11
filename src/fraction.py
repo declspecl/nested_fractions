@@ -126,3 +126,10 @@ class Fraction:
         """
 
         return "({} / {})".format(self.numerator, self.denominator)
+    
+    def __eq__(self, other: Fraction) -> bool:
+        """
+        compares two `Fraction` objects for equality by comparing their numerator and denominator values
+        """
+
+        return self.numerator == other.numerator and self.denominator == other.denominator

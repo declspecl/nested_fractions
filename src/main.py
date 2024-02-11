@@ -12,8 +12,7 @@ class FractionTest(unittest.TestCase):
 
         correct_simplification = Fraction(3, 31)
 
-        self.assertEqual(above_over_five.simplify().numerator, correct_simplification.numerator)
-        self.assertEqual(above_over_five.simplify().denominator, correct_simplification.denominator)
+        self.assertEqual(above_over_five.simplify(), correct_simplification)
 
     def test_medium(self):
         """
@@ -29,8 +28,7 @@ class FractionTest(unittest.TestCase):
 
         correct_simplification = Fraction(3, 8)
 
-        self.assertEqual(frac_of_above_over_three.simplify().numerator, correct_simplification.numerator)
-        self.assertEqual(frac_of_above_over_three.simplify().denominator, correct_simplification.denominator)
+        self.assertEqual(frac_of_above_over_three.simplify(), correct_simplification)
 
 if __name__ == "__main__":
     unittest.main()
