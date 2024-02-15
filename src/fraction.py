@@ -1,5 +1,4 @@
 from __future__ import annotations
-
 import math
 
 class Fraction:
@@ -35,37 +34,24 @@ class Fraction:
         self.expand()
 
         fraction_traversal: list[Fraction] = self.level_order_traversal()
+        
+        fraction_simplified_queue = fraction_traversal[2 ** self.tree_height - 1:]
 
-        new_fraction: Fraction = Fraction(1, 1)
+        while len(fraction_simplified_queue) > 1:
+            current = 0
+            temp_simplified_layer: list[Fraction] = []
 
-        # there are (2 ** (self.tree_height + 1)) - 1 nodes in the tree
-        # the last layer fractions are the final 2 ** self.tree_height nodes
+            while current < len(fraction_simplified_queue):
+                temp_simplified_layer.append(fraction_simplified_queue[current] / fraction_simplified_queue[current + 1])
+                current += 2
 
-        i: int = len(fraction_traversal) - (2 ** self.tree_height)
-        should_flip_operation: bool = False
+            fraction_simplified_queue = temp_simplified_layer
+        
+        gcd = math.gcd(fraction_simplified_queue[0].numerator, fraction_simplified_queue[0].denominator)
+        fraction_simplified_queue[0].numerator /= gcd
+        fraction_simplified_queue[0].denominator /= gcd
 
-        while i + 1 < len(fraction_traversal):
-            left = fraction_traversal[i]
-            right = fraction_traversal[i + 1]
-            
-            if not should_flip_operation:
-                new_fraction.numerator *= (left.numerator * right.denominator)
-                new_fraction.denominator *= (left.denominator * right.numerator)
-            else:
-                new_fraction.numerator *= (left.denominator * right.numerator)
-                new_fraction.denominator *= (left.numerator * right.denominator)
-
-            i += 2
-            should_flip_operation = not should_flip_operation
-
-        print(new_fraction)
-
-        gcd = math.gcd(new_fraction.numerator, new_fraction.denominator)
-
-        new_fraction.numerator //= gcd
-        new_fraction.denominator //= gcd
-
-        return new_fraction
+        return fraction_simplified_queue[0]
 
     def level_order_traversal(self) -> list[Fraction]:
         """
@@ -131,3 +117,17 @@ class Fraction:
         """
 
         return self.numerator == other.numerator and self.denominator == other.denominator
+    
+    def __truediv__(self, other: Fraction) -> Fraction:
+        """
+        overloads the `/` operator to allow for division of `Fraction` objects
+        """
+
+        return Fraction(self.numerator * other.denominator, self.denominator * other.numerator)
+
+    def __floordiv__(self, other: Fraction) -> Fraction:
+        """
+        overloads the `//` operator to allow for floor division of `Fraction` objects
+        """
+
+        return Fraction(self.numerator * other.denominator, self.denominator * other.numerator)

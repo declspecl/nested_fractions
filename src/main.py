@@ -32,6 +32,7 @@ class FractionTest(unittest.TestCase):
 
     def test_hard(self):
         """
+        [[(1 / 2) / (1 / 3)] / 10] / [5 / (9 / 5)] = 27 / 500
         """
 
         f_12: Fraction = Fraction(1, 2)
@@ -44,18 +45,9 @@ class FractionTest(unittest.TestCase):
 
         f_12_13_10_5_95 = Fraction(f_12_13_10, f_5_95)
 
-        f_12_13_10_5_95.expand()
-
-        print(f_95.tree_height)
-        print(f_12_13_10_5_95.level_order_traversal())
-
         correct_simplification = Fraction(27, 500)
 
         self.assertEqual(f_12_13_10_5_95.simplify(), correct_simplification)
 
 if __name__ == "__main__":
     unittest.main()
-
-# nested fraction manifesto
-# if we expand everything to the deepest point, the deepest layer will be ONLY constants and thus can be trivially simplified (DCFs)
-# performing a breadth-first traversal will place all of the DCFs at the end of the list, which can then be evaluated independently in pairs
